@@ -7,7 +7,27 @@ services:
     ports:
       - "4444:4444"
       - "7900:7900"
-  testcontainer:
+  allure:
+    image: "frankescobar/allure-docker-service"
+    environment:
+      CHECK_RESULTS_EVERY_SECONDS: 3
+      KEEP_HISTORY: 5
+    ports:
+      - "5050:5050"
+    volumes:
+      - allure_results:/app/allure-results
+  allure-ui:
+    image: "frankescobar/allure-docker-service-ui"
+    environment:
+      ALLURE_DOCKER_PUBLIC_API_URL: "http://localhost:5050"
+      ALLURE_DOCKER_PUBLIC_API_URL_PREFIX: ""
+    ports:
+        - "5252:5252"
+  hosting_calc:
     build: .
-    depends_on:
-      - chrome
+    image: "hosting_calc"
+    volumes:
+      - .:/hosting_calculator
+      - allure_results:/hosting_calculator/allure-results
+volumes:
+  allure_results:
